@@ -14,8 +14,11 @@ module DataMapper
           @delete_method = options.fetch(:delete)
           # So... this would be "query" and we stuff everything here and hope the other side knows how to handle it
           @query_method = options.fetch(:all) 
-          
-          @client = Savon.client(wsdl: @wsdl_path)
+          savon_options = {wsdl: @wsdl_path}
+          if options[:logging_level] && options[:logging_level].downcase == 'debug'
+            savon_options[:log_level] = :debug
+          end
+          @client = Savon.client(savon_options)
           @options = options
           @expose_client = @options.fetch(:enable_mock_setters, false)
         end

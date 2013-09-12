@@ -13,7 +13,8 @@ describe DataMapper::Adapters::Soap::Adapter do
         :update => 'UpdateHeffalump',
         :delete => 'DeleteHeffalump',
         :all => 'QueryHeffalumps',
-        :enable_mock_setters => true
+        :enable_mock_setters => true,
+        :logging_level => 'debug'
       }
     )
     @client = mock('client')
