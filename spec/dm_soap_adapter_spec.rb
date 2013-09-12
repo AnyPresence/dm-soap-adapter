@@ -9,6 +9,7 @@ describe DataMapper::Adapters::Soap::Adapter do
         :path     => "http://#{HOST}:#{PORT}/HeffalumpsWS",
         :create => 'CreateHeffalump',
         :read => 'GetHeffalump',
+        :read_params => {:id => 'HeffalumpId', :period => 'Period', :spot => 'SpotInfo', :demo => 'Demo'},
         :update => 'UpdateHeffalump',
         :delete => 'DeleteHeffalump',
         :all => 'QueryHeffalumps',
@@ -63,20 +64,14 @@ describe DataMapper::Adapters::Soap::Adapter do
           #save instance
           @heffalump.save!.should be_true
           @heffalump.id.should_not be_nil
-          
-          @client.expects(:call).with(:QueryHeffalumps, {:message => {
-            :model => 'heffalumps', 
-            :fields => [:id, :color, :num_spots, :latitude, :striped, :created, :at_time], 
-            :conditions => [{:equal => [:id, 3]}], 
-            :limit => 1, 
-            :offset => 0}}).once.returns(@response)
+          @client.expects(:call).with(:QueryHeffalumps, {:message => {'HeffalumpId' => 3}}).once.returns(@response)
           @response.expects(:body).once.returns([@result])
           lump = Heffalump.get(3)
           lump.should == @heffalump
         end
         
         it 'should query' do
-          @client.expects(:call).with(:QueryHeffalumps, {:message => {:model => 'heffalumps', :fields => [:id, :color, :num_spots, :latitude, :striped, :created, :at_time], :conditions => [], :order => [{:id => :asc}], :offset => 0}}).once.returns(@response)
+          @client.expects(:call).with(:QueryHeffalumps, {:message => {}}).once.returns(@response)
           @response.expects(:body).once.returns([@result])
           Heffalump.all().should be_include(@heffalump)
         end
@@ -122,7 +117,7 @@ describe DataMapper::Adapters::Soap::Adapter do
           @client.expects(:call).with(:UpdateHeffalump, {:message => {:id => 4, :color => 'violet', :num_spots => nil, :latitude => nil, :striped => nil, :created => nil, :at => nil}}).once.returns(@response)
           @response.expects(:body).once.returns([{:id => 4, :color => 'violet', :num_spots => nil, :latitude => nil, :striped => nil, :created => nil, :at_time => nil}])
           @heffalump.save.should be_true
-          @client.expects(:call).with(:QueryHeffalumps, {:message => {:model => 'heffalumps', :fields => [:id, :color, :num_spots, :latitude, :striped, :created, :at_time], :conditions => [{:equal => [:id, 4]}], :limit => 1, :offset => 0}}).once.returns(@response)
+          @client.expects(:call).with(:QueryHeffalumps, {:message => {'HeffalumpId' => 4}}).once.returns(@response)
           @response.expects(:body).once.returns([{:id => 4, :color => 'violet', :num_spots => nil, :latitude => nil, :striped => nil, :created => nil, :at_time => nil}])
           Heffalump.get(*@heffalump.key).color.should == 'violet'
         end
@@ -133,7 +128,7 @@ describe DataMapper::Adapters::Soap::Adapter do
           @response.expects(:body).once.returns([{:id => 4, :color => 'indigo', :num_spots => 3, :latitude => nil, :striped => nil, :created => nil, :at => nil}])
           @heffalump.num_spots = 3
           @heffalump.save.should be_true
-          @client.expects(:call).with(:QueryHeffalumps, {:message => {:model => 'heffalumps', :fields => [:id, :color, :num_spots, :latitude, :striped, :created, :at_time], :conditions => [{:equal => [:id, 4]}], :limit => 1, :offset => 0}}).once.returns(@response)
+          @client.expects(:call).with(:QueryHeffalumps, {:message => {'HeffalumpId' => 4}}).once.returns(@response)
           @response.expects(:body).once.returns([{:id => 4, :color => 'indigo', :num_spots => 3, :latitude => nil, :striped => nil, :created => nil, :at => nil}])
           Heffalump.get(*@heffalump.key).color.should == color
         end
@@ -159,7 +154,7 @@ describe DataMapper::Adapters::Soap::Adapter do
           id = @heffalump.id
           @client.expects(:call).with(:DeleteHeffalump, {:message => {:id => '5'}}).once.returns(1)
           @heffalump.destroy
-          @client.expects(:call).with(:QueryHeffalumps, {:message => {:model => 'heffalumps', :fields => [:id, :color, :num_spots, :latitude, :striped, :created, :at_time], :conditions => [{:equal => [:id, 5]}], :limit => 1, :offset => 0}}).once.returns(@response)
+          @client.expects(:call).with(:QueryHeffalumps, {:message => {'HeffalumpId' => 5}}).once.returns(@response)
           @response.expects(:body).once.returns(nil)
           Heffalump.get(id).should be_nil
         end
