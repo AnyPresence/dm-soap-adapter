@@ -48,8 +48,8 @@ module DataMapper
         end
         
         def call_service(operation, objects)
-          DataMapper.logger.debug( "calling client #{operation} with #{objects.inspect}")
-          response = @client.call(operation, objects)
+          DataMapper.logger.debug( "calling client #{operation.to_sym} with #{objects.inspect}")
+          response = @client.call(operation.to_sym, objects)
         end
         
       end 
