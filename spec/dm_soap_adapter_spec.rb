@@ -6,7 +6,12 @@ describe DataMapper::Adapters::Soap::Adapter do
   before(:all) do
     @adapter = DataMapper.setup(:default, 
       { :adapter  => :soap,
-        :path     => "http://#{HOST}:#{PORT}/HeffalumpsWS",
+        :path     => "https://www.paypalobjects.com/wsdl/PayPalSvc.wsdl",
+        :headers => {
+          'Username' => ENV['PAYPAL_USERNAME'],
+          'Password' => ENV['PAYPAL_PASSWORD'],
+          'Signature' => ENV['PAYPAL_SIGNATURE']
+          },
         :create => 'CreateHeffalump',
         :read => 'GetHeffalump',
         :read_params => {:id => 'HeffalumpId', :period => 'Period', :spot => 'SpotInfo', :demo => 'Demo'},
@@ -17,6 +22,8 @@ describe DataMapper::Adapters::Soap::Adapter do
         :logging_level => 'debug'
       }
     )
+    
+    Heffalump.all.inspect
     @client = mock('client')
     @adapter.connection.client = @client
     @response = mock('response')

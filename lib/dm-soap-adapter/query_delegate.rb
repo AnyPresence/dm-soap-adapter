@@ -5,6 +5,7 @@ module DataMapper
         
         def build_query(query)
           query_hash = {}
+          query_hash.merge(@options.fetch(:headers)) if @options[:headers]
           if query.conditions
             @options.fetch(:read_params).each do |dm_property_name, wsdl_remote_name|
               if (value = find_condition_value_for_property_name(query.conditions, dm_property_name))
