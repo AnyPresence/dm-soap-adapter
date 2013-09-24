@@ -48,7 +48,7 @@ module DataMapper
           model = query.model
           soap_query = build_query(query)
           begin
-            
+            @log.debug("Soap query is #{soap_query.inspect}")
             response = connection.call_query(soap_query)
             @log.debug("response was #{response.inspect}")
             body = response.body
@@ -181,7 +181,11 @@ module DataMapper
           DataMapper::Logger.new($stdout,level)
           @log = DataMapper.logger
         end
-      end
-    end
+      end # class Adapter
+    
+    end # module Soap
+    
+    ::DataMapper::Adapters::SoapAdapter = DataMapper::Adapters::Soap::Adapter
+    self.send(:const_added,:SoapAdapter)
   end
 end
