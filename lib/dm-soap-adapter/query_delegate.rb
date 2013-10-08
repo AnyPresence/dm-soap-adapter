@@ -16,6 +16,10 @@ module DataMapper
           query_hash
         end
         
+        def build_create(resource)
+          
+        end
+        
         private
         
         def find_condition_value_for_property_name(conditions, property_name)
