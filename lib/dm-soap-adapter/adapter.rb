@@ -46,14 +46,10 @@ module DataMapper
         def read(query)
           @log.debug("Read #{query.inspect} and its model is #{query.model.inspect}")
           model = query.model
-          soap_query = build_query(query)
+          query_operation = build_query(query)
           begin
-            
-            response = connection.call_query(soap_query)
-            @log.debug("response was #{response.inspect}")
-            body = response.body
-            return [] unless body
-            return parse_collection(body, model)
+            response = connection.call_query(query_operation)
+            return handle_response(response, model)
           rescue SoapError => e
             handle_server_outage(e)
           end
@@ -77,9 +73,9 @@ module DataMapper
           resources.each do |resource|
             model = resource.model
             @log.debug("About to create #{model} using #{resource.attributes}")
-            
+            create_operation = build_create(resource)
             begin
-              response = connection.call_create(resource.attributes)
+              response = connection.call_create(create_operation)
               @log.debug("Result of actual create call is #{response.inspect}")
               result = update_attributes(resource, response.body)
             rescue SoapError => e

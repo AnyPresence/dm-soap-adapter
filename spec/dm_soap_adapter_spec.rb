@@ -5,77 +5,58 @@ describe DataMapper::Adapters::Soap::Adapter do
   
   before(:all) do
     @adapter = DataMapper.setup(:default, 
-      { :adapter  => :soap,
-        :path     => "http://#{HOST}:#{PORT}/HeffalumpsWS",
-        :create => 'CreateHeffalump',
-        :read => 'GetHeffalump',
-        :read_params => {:id => 'HeffalumpId', :period => 'Period', :spot => 'SpotInfo', :demo => 'Demo'},
-        :update => 'UpdateHeffalump',
-        :delete => 'DeleteHeffalump',
-        :all => 'QueryHeffalumps',
-        :enable_mock_setters => true,
-        :logging_level => 'debug'
+      { adapter: :soap,
+        path: "spec/fixtures/wsdl.xml",
+        create: 'plan',
+        create_params: {:name => 'ins7:Name'},
+        read: 'plan',
+        read_params: {:id => 'ins7:PlanId'},
+        read_response_selector: 'plan.plan_header',
+        update: 'plan',
+        delete: 'plan',
+        all: 'plan',
+        enable_mock_setters: true,
+        logging_level: 'debug'
       }
     )
-    @client = mock('client')
-    @adapter.connection.client = @client
-    @response = mock('response')
+    
   end
   
   after(:all) do
   end
   
+  describe '#read' do
+    before(:all) do
+
+    end
+      
+      it 'should get by ID' do
+        lump = Plan.get(100192)
+        lump.id.should == 100192
+        lump.name.should == "eugen Hershey's 13/14 Upfront 20.09.2013"
+        lump.channel.should == 'Oxygen'
+      end
+      
+  end
+  
   describe '#create' do
 
       it 'should not raise any errors' do
-        heffalump = Heffalump.new(:color => 'peach')            
-        result = {:id => 1, :color => "peach"}
-        @client.expects(:call).with(:CreateHeffalump, {:message => {:color => 'peach'}}).once.returns(@response)
-        @response.expects(:body).once.returns(result)
+        instance = Plan.new(:name => 'peaches')            
         lambda {
-          heffalump.save
+          instance.save
         }.should_not raise_error
       end
 
       it 'should set the identity field for the resource' do
-          heffalump = Heffalump.new(:color => 'peach')
-          result = {:id => 2, :color => "peach"}
-          heffalump.id.should be_nil
-          @client.expects(:call).with(:CreateHeffalump, {:message => {:id => nil, :color => 'peach'}}).once.returns(@response)
-          @response.expects(:body).once.returns(result)
-          heffalump.save.should be_true
-          heffalump.id.should_not be_nil
-          heffalump.id.should be_a_kind_of(Numeric)
-          heffalump.id.should == 2
-          heffalump.color.should == 'peach'
+          instance = Plan.new(:name => 'peaches')
+          instance.id.should be_nil
+          instance.save.should be_true
+          instance.id.should_not be_nil
+          instance.id.should be_a_kind_of(Numeric)
+          instance.name.should == 'peaches'
       end
 
-    end
-
-    describe '#read' do
-      before(:all) do
-        @result = {:id => 3, :color => "peach", :num_spots => nil}
-        @heffalump = Heffalump.new(:color => 'peach')
-
-      end
-        
-        it 'should get by ID' do
-          @client.expects(:call).with(:CreateHeffalump, {:message => {:color => 'peach'}}).once.returns(@response)
-          @response.expects(:body).once.returns(@result)
-          #save instance
-          @heffalump.save!.should be_true
-          @heffalump.id.should_not be_nil
-          @client.expects(:call).with(:QueryHeffalumps, {:message => {'HeffalumpId' => 3}}).once.returns(@response)
-          @response.expects(:body).once.returns([@result])
-          lump = Heffalump.get(3)
-          lump.should == @heffalump
-        end
-        
-        it 'should query' do
-          @client.expects(:call).with(:QueryHeffalumps, {:message => {}}).once.returns(@response)
-          @response.expects(:body).once.returns([@result])
-          Heffalump.all().should be_include(@heffalump)
-        end
     end
 
     describe '#update' do

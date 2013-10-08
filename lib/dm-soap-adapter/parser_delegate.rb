@@ -4,6 +4,32 @@ module DataMapper
     module Soap
       module ParserDelegate
         
+        def handle_response(response,model)
+          body = response.body
+          elements = []
+          return elements unless body
+          selector = @options[:read_response_selector]
+          @log.debug("Selector is #{selector}")
+          if selector.nil?
+            @log.debug("parsing body #{body.inspect}")
+            return parse_collection(body, model)
+          else
+            collection = body
+            #TODO: Use XPath or something else
+            selector.split('.').each do |exp|
+              collection = collection[exp.to_sym]
+            end
+            if collection.instance_of? Array
+              @log.debug("collection using selector is #{collection.inspect}")
+              elements = parse_collection(collection, model)
+            else
+              elements = [parse_record(collection, model)]
+            end
+            @log.debug("about to return #{elements}")
+            elements
+          end
+        end
+        
         def parse_collection(array, model)
           DataMapper.logger.debug("parse_collection is about to parse\n #{array.inspect}")
           array.collect do |instance|
@@ -15,7 +41,7 @@ module DataMapper
           field_to_property = make_field_to_property_hash(model)
           DataMapper.logger.debug("parse_record is converting #{hash.inspect} for model #{model}")
           record = record_from_hash(hash, field_to_property)
-          DataMapper.logger.debug("Record made from hash is #{record}")
+          DataMapper.logger.debug("Record made from hash is #{record} using #{field_to_property}")
           record
         end
 
@@ -23,7 +49,7 @@ module DataMapper
           record = {}
           hash.each do |field, value|
             DataMapper.logger.debug("#{field} = #{value}")
-            name = field.to_s
+            name = field.to_s.downcase
             property = field_to_property[name]
 
             if property.nil?
@@ -34,15 +60,15 @@ module DataMapper
               raise "Array properties are not yet supported!"
             else
               next unless property
-              record[name] = property.typecast(value)
+              record[property.field] = property.typecast(value)
             end
           end
-
+          DataMapper.logger.debug("record is #{record}")
           record
         end
 
         def make_field_to_property_hash(model)
-          Hash[ model.properties(model.default_repository_name).map { |p| [ p.field, p ] } ]
+          Hash[ model.properties(model.default_repository_name).map { |p| [ p.field.downcase, p ] } ]
         end
         
         def resource_name(model)

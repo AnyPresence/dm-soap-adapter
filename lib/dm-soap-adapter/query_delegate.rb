@@ -11,7 +11,8 @@ module DataMapper
                 query_hash[wsdl_remote_name] = value
               end
             end
-          end         
+          end    
+          DataMapper.logger.debug("build_query is returning #{query_hash}")     
           query_hash
         end
         

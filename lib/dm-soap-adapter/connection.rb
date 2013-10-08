@@ -12,13 +12,13 @@ module DataMapper
           @read_method = options.fetch(:read) # This maps to get a single object
           @update_method = options.fetch(:update)
           @delete_method = options.fetch(:delete)
-          # So... this would be "query" and we stuff everything here and hope the other side knows how to handle it
           @query_method = options.fetch(:all) 
-          savon_options = {wsdl: @wsdl_path}
+          @savon_options = {wsdl: @wsdl_path}
           if options[:logging_level] && options[:logging_level].downcase == 'debug'
-            savon_options[:log_level] = :debug
+            @savon_options[:log_level] = :debug
+            @savon_options[:pretty_print_xml] = true
           end
-          @client = Savon.client(savon_options)
+          @client = Savon::Client.new(@savon_options)
           @options = options
           @expose_client = @options.fetch(:enable_mock_setters, false)
         end
@@ -26,7 +26,11 @@ module DataMapper
         def client=(client)
           @client = client if @expose_client
         end
-
+        
+        def client
+          @client = Savon::Client.new(@savon_options)
+        end
+        
         def call_create(objects)
           call_service(@create_method, message: objects)
         end
@@ -48,7 +52,7 @@ module DataMapper
         end
         
         def call_service(operation, objects)
-          DataMapper.logger.debug( "calling client #{operation.to_sym} with #{objects.inspect}")
+          DataMapper.logger.debug( "Calling #{operation.to_sym} with #{objects.inspect}")
           response = @client.call(operation.to_sym, objects)
         end
         
