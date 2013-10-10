@@ -17,7 +17,7 @@ module DataMapper
             collection = body
             #TODO: Use XPath or something else
             selector.split('.').each do |exp|
-              collection = collection[exp.to_sym]
+              collection = collection.fetch(exp.to_sym)
             end
             if collection.instance_of? Array
               @log.debug("collection using selector is #{collection.inspect}")

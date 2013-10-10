@@ -31,12 +31,20 @@ describe DataMapper::Adapters::Soap::Adapter do
     end
       
       it 'should get by ID' do
-        lump = Plan.get(100192)
-        lump.id.should == 100192
-        lump.name.should == "eugen Hershey's 13/14 Upfront 20.09.2013"
-        lump.channel.should == 'Oxygen'
+        plan = Plan.get(100192)
+        plan.id.should == 100192
+        plan.name.should == "eugen Hershey's 13/14 Upfront 20.09.2013"
+        plan.channel.should == 'Oxygen'
       end
       
+      it 'should query by ID' do
+        plans = Plan.all(:id => 100192)
+        plans.size.should == 1
+        plan = plans.first
+        plan.id.should == 100192
+        plan.name.should == "eugen Hershey's 13/14 Upfront 20.09.2013"
+        plan.channel.should == 'Oxygen'
+      end
   end
   
 end
