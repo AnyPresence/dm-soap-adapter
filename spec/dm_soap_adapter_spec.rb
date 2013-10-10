@@ -8,7 +8,6 @@ describe DataMapper::Adapters::Soap::Adapter do
       { adapter: :soap,
         path: "spec/fixtures/wsdl.xml",
         create: 'plan',
-        create_params: {:name => 'ins7:Name'},
         read: 'plan',
         read_params: {:id => 'ins7:PlanId'},
         read_response_selector: 'plan.plan_header',
