@@ -8,11 +8,6 @@ module DataMapper
 
         def initialize(options)
           @wsdl_path = options.fetch(:path)
-          @create_method = options.fetch(:create)
-          @read_method = options.fetch(:read) # This maps to get a single object
-          @update_method = options.fetch(:update)
-          @delete_method = options.fetch(:delete)
-          @query_method = options.fetch(:all) 
           @savon_options = {wsdl: @wsdl_path}
           if options[:logging_level] && options[:logging_level].downcase == 'debug'
             @savon_options[:log_level] = :debug
@@ -31,25 +26,27 @@ module DataMapper
           @client = Savon::Client.new(@savon_options)
         end
         
-        def call_create(objects)
-          call_service(@create_method, message: objects)
+        def call_create(create_method, objects)
+          call_service(create_method, message: objects)
         end
 
-        def call_update(objects)
-          call_service(@update_method , message: objects)
+        def call_update(update_method, objects)
+          call_service(update_method , message: objects)
         end
 
-        def call_delete(keys)
-          call_service(@delete_method, message: keys)
+        def call_delete(delete_method, keys)
+          call_service(delete_method, message: keys)
         end
     
-        def call_get(id)
-          call_service(@read_method, message: id)
+        def call_get(read_method, id)
+          call_service(read_method, message: id)
         end
     
-        def call_query(query)
-          call_service(@query_method, message: query)
+        def call_query(query_method, query)
+          call_service(query_method, message: query)
         end
+        
+        private
         
         def call_service(operation, objects)
           DataMapper.logger.debug( "Calling #{operation.to_sym} with #{objects.inspect}")

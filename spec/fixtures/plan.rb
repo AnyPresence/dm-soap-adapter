@@ -1,4 +1,6 @@
-class Plan
+module V1
+  class Plan
+  
   include ::DataMapper::Resource
   
   property :id, Serial, field: 'PLAN_ID'
@@ -27,4 +29,6 @@ class Plan
   property :buying_agency, String, field: 'BUYING_AGENCY'
   property :account_exec, String, field: 'ACCOUNT_EXEC'
   property :equalized, String, field: 'EQUALIZED'
+  
+  end
 end

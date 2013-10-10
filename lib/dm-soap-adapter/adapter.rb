@@ -10,6 +10,7 @@ module DataMapper
           @options = options
           @expose_connection = @options.fetch(:enable_mock_setters, false)
           initialize_logger
+          @mappings = options.fetch(:mappings)
         end
 
         def connection=(connection)
@@ -47,8 +48,9 @@ module DataMapper
           @log.debug("Read #{query.inspect} and its model is #{query.model.inspect}")
           model = query.model
           query_operation = build_query(query)
+          query_method = mapped_operation(model)
           begin
-            response = connection.call_query(query_operation)
+            response = connection.call_query(query_method, query_operation)
             return handle_response(response, model)
           rescue SoapError => e
             handle_server_outage(e)
@@ -74,8 +76,9 @@ module DataMapper
             model = resource.model
             @log.debug("About to create #{model} using #{resource.attributes}")
             create_operation = build_create(resource)
+            create_method = mapped_operation(model)
             begin
-              response = connection.call_create(create_operation)
+              response = connection.call_create(create_method, create_operation)
               @log.debug("Result of actual create call is #{response.inspect}")
               result = update_attributes(resource, response.body)
             rescue SoapError => e
@@ -103,11 +106,11 @@ module DataMapper
         def update(attributes, collection)
           @log.debug("Update called with:\nAttributes #{attributes.inspect} \nCollection: #{collection.inspect}")
           collection.select do |resource|
-
+            update_method = mapped_operation(resource.model)
             attributes.each { |property, value| property.set!(resource, value) }
             @log.debug("About to call update with #{resource.attributes}")
             begin
-              response = connection.call_update(resource.attributes)
+              response = connection.call_update(update_method, resource.attributes)
               body = response.body
               update_attributes(resource, body)
             rescue SoapError => e
@@ -135,8 +138,9 @@ module DataMapper
             model = resource.model
             key = model.key
             id = key.get(resource).join
+            delete_method = mapped_operation(resource.model)
             begin
-              connection.call_delete({ key.first.field.to_sym => id})
+              connection.call_delete(delete_method, { key.first.field.to_sym => id})
             rescue SoapError => e
               handle_server_outage(e)
             end

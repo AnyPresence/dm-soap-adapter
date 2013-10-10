@@ -8,7 +8,9 @@ module DataMapper
           body = response.body
           elements = []
           return elements unless body
-          selector = @options[:read_response_selector]
+          entity = entity_name(model)
+          options = @mappings.fetch(entity)
+          selector = options[:read_response_selector]
           @log.debug("Selector is #{selector}")
           if selector.nil?
             @log.debug("parsing body #{body.inspect}")
@@ -57,7 +59,7 @@ module DataMapper
             end
             
             if property.instance_of? DataMapper::Property::Object
-              raise "Array properties are not yet supported!"
+              record[property.field] = value
             else
               next unless property
               record[property.field] = property.typecast(value)
