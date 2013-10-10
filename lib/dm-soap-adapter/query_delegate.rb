@@ -17,7 +17,7 @@ module DataMapper
         end
         
         def build_create(resource)
-          
+          raise "Not yet implemented!"
         end
         
         private
@@ -26,6 +26,8 @@ module DataMapper
           conditions.each do |condition| 
             if condition.instance_of? DataMapper::Query::Conditions::EqualToComparison 
               return condition.loaded_value if condition.subject.name.to_sym == property_name.to_sym
+            else
+              raise "Not yet implemented!"
             end
           end
           return nil

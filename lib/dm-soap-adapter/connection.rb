@@ -16,7 +16,7 @@ module DataMapper
           @savon_options = {wsdl: @wsdl_path}
           if options[:logging_level] && options[:logging_level].downcase == 'debug'
             @savon_options[:log_level] = :debug
-            @savon_options[:pretty_print_xml] = true
+            @savon_options[:pretty_print_xml] = true            
           end
           @client = Savon::Client.new(@savon_options)
           @options = options

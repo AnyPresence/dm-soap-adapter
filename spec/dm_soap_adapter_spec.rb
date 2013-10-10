@@ -13,9 +13,8 @@ describe DataMapper::Adapters::Soap::Adapter do
         read_response_selector: 'plan.plan_header',
         update: 'plan',
         delete: 'plan',
-        all: 'plan',
-        enable_mock_setters: true,
-        logging_level: 'debug'
+        all: 'plan'
+        #,logging_level: 'debug'
       }
     )
     
