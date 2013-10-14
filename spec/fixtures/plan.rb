@@ -2,7 +2,6 @@ module V1
   class Plan
   
   include ::DataMapper::Resource
-  include ::DataMapper::SoapResource
   
   property :id, Serial, field: 'PLAN_ID'
   property :name, String, field: 'PLAN_NAME'

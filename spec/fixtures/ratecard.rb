@@ -2,7 +2,6 @@ module V1
   class Ratecard
   
     include ::DataMapper::Resource
-    include ::DataMapper::SoapResource
     
     property :id, Serial, field: 'US_Ratecard_ID'
     property :name, String, field: 'US_Ratecard_Name'
