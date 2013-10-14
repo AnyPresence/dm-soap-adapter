@@ -9,19 +9,16 @@ describe DataMapper::Adapters::Soap::Adapter do
         path: "spec/fixtures/wsdl.xml",
         mappings: {
           plan: {
-            operation: 'plan',
             read_xml_ns: 'ins7',
             read_params: {id: 'PlanId'},
             read_response_selector: 'plan.plan_header'
           },
           inventory: {
-            operation: 'inventory',
             read_xml_ns: 'ins4',
             read_params: {id: 'Sales_Unit_Id'},
             read_response_selector: 'inventory_output.selling_name'
           },
           ratecard: {
-            operation: 'ratecard',
             read_xml_ns: 'ins5',
             read_params: {id: 'RC_Id', channel: 'RC_Channel'},
             read_response_selector: 'ratecard.header_info'
