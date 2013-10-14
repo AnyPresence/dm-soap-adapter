@@ -1,5 +1,6 @@
 class ::Heffalump
   include ::DataMapper::Resource
+  include ::DataMapper::SoapResource
   
   property :id,        Serial
   property :color,     String
