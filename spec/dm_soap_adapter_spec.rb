@@ -29,8 +29,8 @@ describe DataMapper::Adapters::Soap::Adapter do
             read_params: {id: 'Sales_Unit_Id'},
             read_response_selector: 'overlap_su_response'
           }
-        },        
-        logging_level: 'debug'
+        }        
+        #logging_level: 'debug'
       }
     )
     
