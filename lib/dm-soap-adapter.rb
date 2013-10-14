@@ -1,7 +1,6 @@
 require 'data_objects'
 require 'dm-core'
 
-require 'dm-soap-adapter/soap_resource'
 require 'dm-soap-adapter/connection'
 require 'dm-soap-adapter/errors'
 require 'dm-soap-adapter/version'
@@ -12,5 +11,3 @@ require 'dm-soap-adapter/adapter'
 
 require 'savon'
 
-::DataMapper::Adapters::SoapAdapter = DataMapper::Adapters::Soap::Adapter
-::DataMapper::Adapters.const_added(:SoapAdapter)

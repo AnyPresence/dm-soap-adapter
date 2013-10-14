@@ -183,5 +183,8 @@ module DataMapper
         end
       end
     end
+    
+    ::DataMapper::Adapters::SoapAdapter = DataMapper::Adapters::Soap::Adapter
+    self.send(:const_added,:SoapAdapter)
   end
 end
