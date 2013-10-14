@@ -36,7 +36,13 @@ module DataMapper
         end
         
         def mapped_operation(model)
-          entity_name(model)
+          entity = entity_name(model)
+          options = @mappings.fetch(entity)
+          if options.has_key?(:operation)
+            return options.fetch(:operation)
+          else
+            return entity
+          end
         end
         
         private

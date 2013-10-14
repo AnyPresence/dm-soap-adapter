@@ -25,6 +25,12 @@ describe DataMapper::Adapters::Soap::Adapter do
             read_xml_ns: 'ins5',
             read_params: {id: 'RC_Id', channel: 'RC_Channel'},
             read_response_selector: 'ratecard.header_info'
+          },
+          overlap: {
+            operation: 'overlap_su',
+            read_xml_ns: 'ins3',
+            read_params: {id: 'Sales_Unit_Id'},
+            read_response_selector: 'overlap_su_response'
           }
         },        
         logging_level: 'debug'
@@ -96,6 +102,44 @@ describe DataMapper::Adapters::Soap::Adapter do
         week[:total_pressure].should == "38"        
       end
       
+      it 'should query Overlap by ID and other parameters' do
+        overlaps = V3::Overlap.all(id: 46258, extra_parameters: {
+          'Start_Date' => '22-aug-2013',
+          'NoOfWeeks' => 2,
+          'Channel_Name' => 'Oxygen',
+          'Comm_Type_Name' => 'National',
+          'Day_Type_Id' => 1307001,
+          'Inventory_Type_Code' => '3114000(Pri)',
+          'Affiliate_Status_Code' => 1853000
+        })
+        overlaps.size.should == 1
+        overlap = overlaps.first
+        overlap.id.should == 46258
+        overlap.weeks.size.should == 3
+        week1 = overlap.weeks[0]
+        week1[:week_date].should == '19-Aug-2013'
+        week1[:s_unit_id][0].should == '46258'
+        week1[:s_unit_id][1].should == '50013'
+        week1[:s_unit_id][2].should == '46223'
+        week1[:s_unit_id][3].should == '45587'
+        week1[:s_unit_id][4].should == '46874'
+        week2 = overlap.weeks[1]
+        week2[:week_date].should == "26-Aug-2013"
+        week2[:s_unit_id][0].should == '46258'
+        week2[:s_unit_id][1].should == '46223'
+        week2[:s_unit_id][2].should == '45587'
+        week2[:s_unit_id][3].should == '46874'
+        week2[:s_unit_id][4].should == '50013'
+        week2[:s_unit_id][5].should == '46691'
+        week3 = overlap.weeks[2]
+        week3[:week_date].should == "02-Sep-2013"
+        week3[:s_unit_id][0].should == '46258'
+        week3[:s_unit_id][1].should == '50013'
+        week3[:s_unit_id][2].should == '46874'
+        week3[:s_unit_id][3].should == '46691'
+        week3[:s_unit_id][4].should == '45587'
+        week3[:s_unit_id][5].should == '46223'   
+      end
   end
   
 end
