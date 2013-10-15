@@ -44,7 +44,7 @@ describe DataMapper::Adapters::Soap::Adapter do
 
     end
            
-      it 'should get Ratecard by ID' do
+      it 'should query Ratecard by ID and other required parameters' do
         ratecards = V1::Ratecard.all(id: 14855, extra_parameters: {'RC_Channel' => 'Oxygen', 'RC_StartQtr' => '3Q13',  'RC_EndQtr' => '3Q14', 'RC_Demo' => 'F18-49'})
         ratecards.size.should == 1
         ratecard = ratecards.first
@@ -53,7 +53,7 @@ describe DataMapper::Adapters::Soap::Adapter do
         ratecard.channel.should == 'Oxygen'
       end
       
-      it 'should query Plan by ID' do
+      it 'should query Plan by ID and other required parameters' do
         plans = V1::Plan.all(id: 100192, extra_parameters: {'SpotInfo' => 'NO'})
         plans.size.should == 1
         plan = plans.first
@@ -62,7 +62,7 @@ describe DataMapper::Adapters::Soap::Adapter do
         plan.channel.should == 'Oxygen'
       end
       
-      it 'should query Inventory by ID and other parameters' do
+      it 'should query Inventory by ID and other required parameters' do
         inventories = V2::Inventory.all(id: 51583, extra_parameters: {
           'Start_Date' => '30-sep-2013',
           'End_Date' => '28-sep-2014',
