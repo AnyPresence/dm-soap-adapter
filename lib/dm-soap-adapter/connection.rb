@@ -5,15 +5,17 @@ module DataMapper
     module Soap
       
       class Connection
-
+        include ::DataMapper::Adapters::Soap::DispatcherDelegate, ::DataMapper::Adapters::Soap::ParserDelegate, ::DataMapper::Adapters::Soap::QueryDelegate
+        
         def initialize(options)
           @wsdl_path = options.fetch(:path)
-          @create_method = options.fetch(:create)
-          @read_method = options.fetch(:read) # This maps to get a single object
-          @update_method = options.fetch(:update)
-          @delete_method = options.fetch(:delete)
-          # So... this would be "query" and we stuff everything here and hope the other side knows how to handle it
-          @query_method = options.fetch(:all)
+          @mappings = options.fetch(:mappings)
+          
+          if @mappings.instance_of? String
+            log.debug("Attempting to load string mappings")
+            @mappings = JSON.parse(@mappings)
+            log.debug("Loaded #{@mappings.inspect}")
+          end
           
           savon_ops = { wsdl: @wsdl_path }
           
@@ -39,35 +41,18 @@ module DataMapper
           @expose_client = @options.fetch(:enable_mock_setters, false)
         end
         
+        def log
+          DataMapper.logger
+        end
+        def mapping(method, model)
+          method_mappings = @mappings.fetch(method.to_s)
+          method_mappings.fetch(model.to_s)
+        end
+        
         def client=(client)
           @client = client if @expose_client
         end
-
-        def call_create(objects)
-          call_service(@create_method, message: objects)
-        end
-
-        def call_update(objects)
-          call_service(@update_method , message: objects)
-        end
-
-        def call_delete(keys)
-          call_service(@delete_method, message: keys)
-        end
-    
-        def call_get(id)
-          call_service(@read_method, message: id)
-        end
-    
-        def call_query(query)
-          call_service(@query_method, message: query)
-        end
-        
-        def call_service(operation, objects)
-          DataMapper.logger.debug( "calling client #{operation.to_sym} with #{objects.inspect}")
-          response = @client.call(operation.to_sym, objects)
-        end
-        
+     
       end 
     end
   end

@@ -5,7 +5,7 @@ module DataMapper
       module ParserDelegate
         
         def parse_collection(array, model)
-          DataMapper.logger.debug("parse_collection is about to parse\n #{array.inspect}")
+          log.debug("parse_collection is about to parse\n #{array.inspect}")
           array.collect do |instance|
             parse_record(instance, model)
           end
@@ -13,16 +13,16 @@ module DataMapper
         
         def parse_record(hash,model)
           field_to_property = make_field_to_property_hash(model)
-          DataMapper.logger.debug("parse_record is converting #{hash.inspect} for model #{model}")
+          log.debug("parse_record is converting #{hash.inspect} for model #{model}")
           record = record_from_hash(hash, field_to_property)
-          DataMapper.logger.debug("Record made from hash is #{record}")
+          log.debug("Record made from hash is #{record}")
           record
         end
 
         def record_from_hash(hash, field_to_property)
           record = {}
           hash.each do |field, value|
-            DataMapper.logger.debug("#{field} = #{value}")
+            log.debug("#{field} = #{value}")
             name = field.to_s
             property = field_to_property[name]
 

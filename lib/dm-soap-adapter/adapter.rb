@@ -3,7 +3,7 @@ module DataMapper
   module Adapters
     module Soap
       class Adapter < DataMapper::Adapters::AbstractAdapter
-        include Errors, ParserDelegate, QueryDelegate
+        include Errors
         
         def initialize(name, options)
           super
@@ -45,15 +45,12 @@ module DataMapper
         # @api semipublic
         def read(query)
           @log.debug("Read #{query.inspect} and its model is #{query.model.inspect}")
-          model = query.model
-          soap_query = build_query(query)
+         
           begin
             
-            response = connection.call_query(soap_query)
-            @log.debug("response was #{response.inspect}")
-            body = response.body
-            return [] unless body
-            return parse_collection(body, model)
+            array = connection.dispatch_query(query)
+            @log.debug("Array was #{response.inspect}")
+            return array
           rescue SoapError => e
             handle_server_outage(e)
           end

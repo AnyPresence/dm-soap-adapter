@@ -4,6 +4,19 @@ module DataMapper
       module QueryDelegate
         
         def build_query(query)
+          log.debug("build_query(#{query})")     
+          model_mapping = mapping(:query, entity_name(query.model))
+          log.debug("Model mapping is #{model_mapping.inspect}")
+          operation = model_mapping.fetch('operation_name')
+          log.debug("Operation is #{operation}")
+          parameters = model_mapping.fetch('input_parameters')
+          log.debug("Parameters are #{parameters.inspect}")
+          message = build_query_message(query, parameters)
+          log.debug("Message built is:\n#{message.inspect}")
+          { operation: operation, message: message }
+        end
+        
+        def build_query_old(query)
           query_hash = {}
           query_hash[:model] = query.model.storage_name(query.repository)          
           query_hash[:fields] = build_queried_fields(query.fields)
@@ -15,24 +28,43 @@ module DataMapper
           query_hash
         end
         
+        def build_query_message(query, configured_parameters)
+          message = {}
+          properties = make_field_to_property_hash(query.model)
+          conditions = build_query_conditions(query.conditions)
+          conditions.each do |field, value|
+            message[field] = value if configured_parameters.has_key?(field)
+          end
+          message
+        end
+        
         def build_queried_fields(properties)
           properties.collect{|property| property.field.to_sym }
         end
         
         def build_query_conditions(conditions)
+          return {} if conditions.nil?
           conditions.collect do |condition|
             if condition.instance_of? DataMapper::Query::Conditions::EqualToComparison
-              {:equal => [condition.subject.field.to_sym, condition.loaded_value]}
+              {condition.subject.field.to_sym => condition.loaded_value}
             else
               raise "Implement me for #{operand.class}"
             end
           end
         end
         
+        def make_field_to_property_hash(model)
+          Hash[ model.properties(model.default_repository_name).map { |p| [ p.field, p ] } ]
+        end
+        
         def build_query_order(order)
           order.collect do |direction|
             {direction.target.field.to_sym => direction.operator}
           end
+        end
+        
+        def entity_name(model)
+          DataMapper::Inflector.singularize(model.name.split(/::/).last).downcase
         end
       end
     end
