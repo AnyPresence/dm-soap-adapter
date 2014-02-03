@@ -24,8 +24,51 @@ describe DataMapper::Adapters::Soap::Adapter do
         station = stations.first
         station.id.should == '1:87063'
         station.station_manufacturer.should == 'Schneider'
-=begin         stationManufacturer></stationManufacturer><stationModel>EV230PDRACG</stationModel><stationMacAddr>000D:6F00:0154:EF55</stationMacAddr><stationSerialNum>1307311001A0</stationSerialNum><Address>8001 Knightdale Blvd </Address><City>Knightdale</City><State>North Carolina</State><Country>United States</Country><postalCode>27545</postalCode><Port><portNumber>1</portNumber><stationName>SCHNEIDER EVMFG / EVLINK</stationName><Geo><Lat>35.808078573741320</Lat><Long>-78.460965126319880</Long></Geo><Description>-</Description><Reservable>0</Reservable><Status>INUSE</Status><Level>L2</Level><Connector>J1772</Connector><Voltage>240</Voltage><Current>30</Current><Power>7.2</Power><estimatedCost>0.00</estimatedCost></Port><Port><portNumber>2</portNumber><stationName>SCHNEIDER EVMFG / EVLINK</stationName><Geo><Lat>35.808078573741320</Lat><Long>-78.460965126319880</Long></Geo><Description>-</Description><Reservable>0</Reservable><Status>INUSE</Status><Level>L2</Level><Connector>J1772</Connector><Voltage>240</Voltage><Current>30</Current><Power>7.2</Power><estimatedCost>0.00</estimatedCost></Port><numPorts>2</numPorts><mainPhone>1-888-758-4389</mainPhone><orgID>1:ORG07163</orgID><organizationName>Schneider Electric MFG</organizationName><sgID>39795, 38623, 39557, 40815, 42613, 43819</sgID><sgName>IEC Lab, Public Stations, Public Non-Demo Provisioned and In Prgoress, Available and In Use 2, OnRamp 3.5.1 Controlled Release2, Active Non-Demo</sgName></stationData>
-=end        
+        station.station_model.should == 'EV230PDRACG' 
+        station.station_mac_address.should == '000D:6F00:0154:EF55'
+        station.station_serial_number.should == '1307311001A0'
+        station.address.should == '8001 Knightdale Blvd '
+        station.city.should == 'Knightdale'
+        station.state.should == 'North Carolina'
+        station.country.should == 'United States'
+        station.postal_code.should == '27545'
+        station.number_ports.should == 2
+        station.main_phone.should == '1-888-758-4389'
+        station.org_id.should == '1:ORG07163'
+        station.organization_name.should == 'Schneider Electric MFG'
+        station.sg_id.should == '39795, 38623, 39557, 40815, 42613, 43819'
+        station.sg_name.should == 'IEC Lab, Public Stations, Public Non-Demo Provisioned and In Prgoress, Available and In Use 2, OnRamp 3.5.1 Controlled Release2, Active Non-Demo'
+        station.ports.size.should == 2
+        port1 = station.ports.first
+        port1["portNumber"].should == "1"
+        port1["stationName"].should == 'SCHNEIDER EVMFG / EVLINK'
+        port1["Geo"]["Lat"].should == "35.808078573741320"
+        port1["Geo"]["Long"].should =="-78.460965126319880"
+        port1["Description"].should == "-"
+        port1["Reservable"].should == "0"
+        port1["Status"].should == "INUSE"
+        port1["Level"].should == "L2"
+        port1["Connector"].should == "J1772"
+        port1["Voltage"].should == "240"
+        port1["Current"].should == "30"
+        port1["Power"].should == "7.2"
+        port1["estimatedCost"].should == "0.00"
+        
+        port2 = station.ports.last
+        port2["portNumber"].should == "2"
+        port2["stationName"].should == 'SCHNEIDER EVMFG / EVLINK'
+        port2["Geo"]["Lat"].should == "35.808078573741320"
+        port2["Geo"]["Long"].should =="-78.460965126319880"
+        port2["Description"].should == "-"
+        port2["Reservable"].should == "0"
+        port2["Status"].should == "INUSE"
+        port2["Level"].should == "L2"
+        port2["Connector"].should == "J1772"
+        port2["Voltage"].should == "240"
+        port2["Current"].should == "30"
+        port2["Power"].should == "7.2"
+        port2["estimatedCost"].should == "0.00"   
+      
       }.should_not raise_error
     end
   end

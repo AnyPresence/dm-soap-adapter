@@ -46,9 +46,9 @@ module V3
 
   property :org_id, Text, field: "orgID", key: false, required: false, lazy: false
 
-  property :org_name, Text, field: "orgName", key: false, required: false, lazy: false
+  property :organization_name, Text, field: "organizationName", key: false, required: false, lazy: false
 
-  property :port, Object, field: "Port", key: false, required: false, lazy: false
+  property :ports, Object, field: "Port", key: false, required: false, lazy: false
 
   property :postal_code, Text, field: "postalCode", key: false, required: false, lazy: false
 
