@@ -19,17 +19,10 @@ module DataMapper
         end
     
         def dispatch_query(query)
-          soap_query = build_query(query)
+          model_mapping = mapping(:query, entity_name(query.model))
+          soap_query = build_query(query, model_mapping)
           response = call_service(soap_query[:operation], message: soap_query[:message])
-          DataMapper.logger.debug( "Response is #{response.inspect}")
-          body = response.body
-          return [] unless body
-          return parse_collection(body, model)
-        end
-        
-        
-        def call_query(query)
-          
+          return handle_response(response, query.model, model_mapping)
         end
         
         def call_service(operation, objects)

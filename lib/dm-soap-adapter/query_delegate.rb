@@ -3,16 +3,15 @@ module DataMapper
     module Soap
       module QueryDelegate
         
-        def build_query(query)
-          log.debug("build_query(#{query})")     
-          model_mapping = mapping(:query, entity_name(query.model))
-          log.debug("Model mapping is #{model_mapping.inspect}")
+        def build_query(query, model_mapping)
+          DataMapper.logger.debug("build_query(#{query})")
+          DataMapper.logger.debug("Model mapping is #{model_mapping.inspect}")
           operation = model_mapping.fetch('operation_name')
-          log.debug("Operation is #{operation}")
+          DataMapper.logger.debug("Operation is #{operation}")
           parameters = model_mapping.fetch('input_parameters')
-          log.debug("Parameters are #{parameters.inspect}")
+          DataMapper.logger.debug("Parameters are #{parameters.inspect}")
           message = build_query_message(query, parameters)
-          log.debug("Message built is:\n#{message.inspect}")
+          DataMapper.logger.debug("Message built is:\n#{message.inspect}")
           { operation: operation, message: message }
         end
         

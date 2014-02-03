@@ -15,7 +15,7 @@ group :test do
   gem 'dm-types', DM_VERSION
   gem "dm-core",  DM_VERSION
 
-  gem 'savon', '~> 2.2.0'
+  gem 'savon', '~> 2.3.3'
   gem "mocha", '~> 0.13', :require => false
   gem "soap4r", "~> 1.5.8"
 end

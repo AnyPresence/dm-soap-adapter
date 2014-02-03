@@ -44,12 +44,11 @@ module DataMapper
         #
         # @api semipublic
         def read(query)
-          @log.debug("Read #{query.inspect} and its model is #{query.model.inspect}")
+          DataMapper.logger.debug("Read #{query.inspect} and its model is #{query.model.inspect}")
          
           begin
-            
             array = connection.dispatch_query(query)
-            @log.debug("Array was #{response.inspect}")
+            DataMapper.logger.debug("Array was #{array.inspect}")
             return array
           rescue SoapError => e
             handle_server_outage(e)
@@ -73,11 +72,11 @@ module DataMapper
         def create(resources)
           resources.each do |resource|
             model = resource.model
-            @log.debug("About to create #{model} using #{resource.attributes}")
+            DataMapper.logger.debug("About to create #{model} using #{resource.attributes}")
             
             begin
               response = connection.call_create(resource.attributes)
-              @log.debug("Result of actual create call is #{response.inspect}")
+              DataMapper.logger.debug("Result of actual create call is #{response.inspect}")
               result = update_attributes(resource, response.body)
             rescue SoapError => e
               handle_server_outage(e)    
@@ -102,11 +101,11 @@ module DataMapper
         #
         # @api semipublic
         def update(attributes, collection)
-          @log.debug("Update called with:\nAttributes #{attributes.inspect} \nCollection: #{collection.inspect}")
+          DataMapper.logger.debug("Update called with:\nAttributes #{attributes.inspect} \nCollection: #{collection.inspect}")
           collection.select do |resource|
 
             attributes.each { |property, value| property.set!(resource, value) }
-            @log.debug("About to call update with #{resource.attributes}")
+            DataMapper.logger.debug("About to call update with #{resource.attributes}")
             begin
               response = connection.call_update(resource.attributes)
               body = response.body
@@ -152,7 +151,7 @@ module DataMapper
           properties.each do |prop| 
             fields[prop.field.to_sym] = prop.name.to_sym
           end
-          @log.debug( "Properties are #{properties.inspect} and body is #{body.inspect}")
+          DataMapper.logger.debug( "Properties are #{properties.inspect} and body is #{body.inspect}")
           
           parse_record(body, model).each do |key, value|
             if property = properties[fields[key.to_sym]]
@@ -176,7 +175,6 @@ module DataMapper
             level = @options[:logging_level].downcase
           end
           DataMapper::Logger.new($stdout,level)
-          @log = DataMapper.logger
         end
       end # class Adapter
     end

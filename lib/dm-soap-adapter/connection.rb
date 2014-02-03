@@ -12,12 +12,12 @@ module DataMapper
           @mappings = options.fetch(:mappings)
           
           if @mappings.instance_of? String
-            log.debug("Attempting to load string mappings")
+            DataMapper.logger.debug("Attempting to load string mappings")
             @mappings = JSON.parse(@mappings)
-            log.debug("Loaded #{@mappings.inspect}")
+            DataMapper.logger.debug("Loaded #{@mappings.inspect}")
           end
-          
-          savon_ops = { wsdl: @wsdl_path }
+          nochange = lambda { |key| key }
+          savon_ops = { wsdl: @wsdl_path, convert_request_keys_to: :none, convert_response_tags_to: nochange }
           
           auth_ops = {}
           if options[:username] && options[:password]
@@ -41,9 +41,6 @@ module DataMapper
           @expose_client = @options.fetch(:enable_mock_setters, false)
         end
         
-        def log
-          DataMapper.logger
-        end
         def mapping(method, model)
           method_mappings = @mappings.fetch(method.to_s)
           method_mappings.fetch(model.to_s)

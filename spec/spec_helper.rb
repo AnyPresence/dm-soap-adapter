@@ -10,7 +10,7 @@ require 'dm-core/spec/shared/adapter_spec'
 
 require 'mocha/api'
 
-#DataMapper::Logger.new(STDOUT, :debug)
+DataMapper::Logger.new(STDOUT, :debug)
 
 ROOT = Pathname(__FILE__).dirname.parent
 
@@ -21,8 +21,8 @@ ENV['ADAPTER'] = 'soap'
 ENV['ADAPTER_SUPPORTS'] = 'all'
 HOST = "localhost"
 PORT = 9999
-TEST_USERNAME = 'humpty'
-TEST_PASSWORD = 'dumpty'
+
+raise "No username and password found!" unless ENV['SOAP_USERNAME'] && ENV['SOAP_PASSWORD']
 
 DataMapper.finalize
 
