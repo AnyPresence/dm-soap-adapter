@@ -74,8 +74,15 @@ describe DataMapper::Adapters::Soap::Adapter do
   end
   
   describe '#create' do
-    it 'should confirm a reservation' do
+    it 'should not confirm a garbage reservation' do
       reservation = ::V3::Reservation.new            
+      lambda {
+        reservation.save
+      }.should raise_error
+    end
+    
+    it 'should confirm a reservation' do
+      reservation = ::V3::Reservation.new(account_handle: "42", serial_number: "123", station_id: '1:87063', start_time: Time.now.utc.iso8601, duration: "15")
       lambda {
         reservation.save
         reservation.id.should_not be_nil

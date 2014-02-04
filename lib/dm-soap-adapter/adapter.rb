@@ -47,9 +47,7 @@ module DataMapper
           DataMapper.logger.debug("Read #{query.inspect} and its model is #{query.model.inspect}")
          
           begin
-            array = connection.dispatch_query(query)
-            DataMapper.logger.debug("Array was #{array.inspect}")
-            return array
+            connection.dispatch_query(query)
           rescue SoapError => e
             handle_server_outage(e)
           end
@@ -70,18 +68,15 @@ module DataMapper
         #
         # @api semipublic  
         def create(resources)
+          count = 0
           resources.each do |resource|
-            model = resource.model
-            DataMapper.logger.debug("About to create #{model} using #{resource.attributes}")
-            
             begin
-              response = connection.call_create(resource.attributes)
-              DataMapper.logger.debug("Result of actual create call is #{response.inspect}")
-              result = update_attributes(resource, response.body)
+              count += connection.dispatch_create(resource)
             rescue SoapError => e
               handle_server_outage(e)    
             end
           end
+          count
         end
         
         # Updates one or many existing resources
@@ -109,7 +104,7 @@ module DataMapper
             begin
               response = connection.call_update(resource.attributes)
               body = response.body
-              update_attributes(resource, body)
+              #update_attributes(resource, body)
             rescue SoapError => e
               handle_server_outage(e)
             end
@@ -143,22 +138,7 @@ module DataMapper
           end.size
         end
 
-        def update_attributes(resource, body)
-          return if DataMapper::Ext.blank?(body)
-          fields = {}
-          model      = resource.model
-          properties = model.properties(model.default_repository_name)
-          properties.each do |prop| 
-            fields[prop.field.to_sym] = prop.name.to_sym
-          end
-          DataMapper.logger.debug( "Properties are #{properties.inspect} and body is #{body.inspect}")
-          
-          parse_record(body, model).each do |key, value|
-            if property = properties[fields[key.to_sym]]
-              property.set!(resource, value)
-            end
-          end
-        end
+        
         
         def handle_server_outage(error)
           if error.server_unavailable?

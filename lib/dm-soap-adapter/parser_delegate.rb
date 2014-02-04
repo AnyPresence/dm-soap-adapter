@@ -4,6 +4,7 @@ module DataMapper
     module Soap
       module ParserDelegate
         
+        
         def handle_response(response,model, model_mapping)
           DataMapper.logger.debug("parse_collection is called with:\n#{response.inspect}\n#{model}\n#{model_mapping}")
           body = response.body
