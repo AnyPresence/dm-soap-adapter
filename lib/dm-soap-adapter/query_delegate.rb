@@ -29,9 +29,8 @@ module DataMapper
         
         def build_create_message(resource, configured_parameters)
           message = {}
-          resource.attributes(:property).each do |property|
-            value = property.get(resource)
-            field = property.field
+          DataMapper.logger.debug("build_create_message #{resource} and #{configured_parameters}\n")
+          resource.attributes(:field).each do |field, value|
             DataMapper.logger.debug("Checking #{field} with value #{value}\n")
             message[field] = value if configured_parameters.has_key?(field)
           end

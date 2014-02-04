@@ -26,7 +26,11 @@ module DataMapper
           response_code = actual_response['responseCode'].to_i
 
           if response_code == 100
-            update_attributes(resource, body)
+            hash = handle_response(response,resource.model, model_mapping)
+            resource.attributes(:property).each do |property|
+              DataMapper.logger.debug("Setting #{property.name} = #{hash[property.field]})")
+              property.set!(resource,hash[property.field])
+            end
             create_result = 1
           elsif response_code == 172
             raise actual_response['responseText']

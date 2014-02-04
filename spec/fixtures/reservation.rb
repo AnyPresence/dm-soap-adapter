@@ -20,7 +20,7 @@ module V3
 
     property :serial_number, Text, field: "serialNumber", key: false, required: false, lazy: false
 
-    property :start_time, Date, field: "startTIme", key: false, required: false, lazy: false
+    property :start_time, Date, field: "startTime", key: false, required: false, lazy: false
 
     property :station_id, Text, field: "stationID", key: false, required: false, lazy: false
   end
