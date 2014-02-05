@@ -46,7 +46,7 @@ describe DataMapper::Adapters::Soap::Adapter do
         port1["Geo"]["Long"].should =="-78.460965126319880"
         port1["Description"].should == "-"
         port1["Reservable"].should == "0"
-        port1["Status"].should == "INUSE"
+        ["INUSE", "AVAILABLE"].should include(port1["Status"])
         port1["Level"].should == "L2"
         port1["Connector"].should == "J1772"
         port1["Voltage"].should == "240"
@@ -61,7 +61,7 @@ describe DataMapper::Adapters::Soap::Adapter do
         port2["Geo"]["Long"].should =="-78.460965126319880"
         port2["Description"].should == "-"
         port2["Reservable"].should == "0"
-        port2["Status"].should == "INUSE"
+        ["INUSE", "AVAILABLE"].should include(port2["Status"])
         port2["Level"].should == "L2"
         port2["Connector"].should == "J1772"
         port2["Voltage"].should == "240"
@@ -82,7 +82,7 @@ describe DataMapper::Adapters::Soap::Adapter do
     end
     
     it 'should confirm a reservation' do
-      reservation = ::V3::Reservation.new(account_handle: "42", serial_number: "123", station_id: '1:87063', start_time: Time.now.utc.iso8601, duration: "15", port_number: 2)
+      reservation = ::V3::Reservation.new(account_handle: "ANACTI52D6FFC3A6F6C", serial_number: "250180662", station_id: '1:85543', start_time: Time.now.utc.iso8601, duration: "15")
       lambda {
         reservation.save
         reservation.id.should_not be_nil
